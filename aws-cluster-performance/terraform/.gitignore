@@ -7,5 +7,6 @@
 
 # Sensitive Files
 /variables.tf
-
+keys/zeebe
+keys/zeebe.pub
 zeebe.pub
