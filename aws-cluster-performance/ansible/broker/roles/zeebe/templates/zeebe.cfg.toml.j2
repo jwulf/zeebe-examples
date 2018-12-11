@@ -1,5 +1,5 @@
 # Global configuration --------------------------------
-bootstrap = {{ bootstrap }}
+# bootstrap = {{ bootstrap }}
 [global]
 directory = "{{ zeebe_data_dir }}"
 
@@ -22,6 +22,10 @@ port = {{ zeebe_replication_port }}
 
 [cluster]
 initialContactPoints = {{ zeebe_contact_points | safe }}
+nodeId= {{ zeebe_node_id }}
+partitionsCount = 3
+replicationFactor = 3
+clusterSize = 4
 
 # System Configuration --------------------------------
 

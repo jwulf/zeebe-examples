@@ -3,7 +3,7 @@ zeebe_user: ubuntu
 zeebe_group: ubuntu
 
 # specifies the version which should be downloaded, currently 0.10.0-SNAPSHOT
-zeebe_version: 0.10.1
+zeebe_version: 0.14.0
 #zeebe_version: 0.10.0
 zeebe_tar_gz: /tmp/zeebe-distribution.tar.gz
 
@@ -16,9 +16,9 @@ nexus_zeebe_repository: zeebe-io
 # zeebe configuration
 zeebe_log_level: debug
 zeebe_client_host: "{{ zeebe_host }}"
-zeebe_client_port: 51015
+zeebe_client_port: 26501
 zeebe_management_host: "{{ zeebe_host }}"
-zeebe_management_port: 51016
+zeebe_management_port: 26502
 zeebe_replication_host: "{{ zeebe_host }}"
-zeebe_replication_port: 51017
+zeebe_replication_port: 26503
 zeebe_contact_points: []
