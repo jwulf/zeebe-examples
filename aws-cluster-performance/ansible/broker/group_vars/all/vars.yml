@@ -11,4 +11,4 @@ hostname: "{{ec2_id}}"
 # Generate unique node_id for clustering
 zeebe_node_id: "{% for n in range(groups['all']|length) %}{% if ec2_public_dns_name == hostvars[groups['all'][n]]['ec2_public_dns_name']%}{{ n }}{% endif %}{% endfor %}"
 # This looks difficult, but for now we need to make sure that each broker only specifies other broker nodes
-zeebe_contact_points: "{% set IP_ARR=[] %}{% if hostvars[groups['all'][0]]['ec2_public_dns_name'] == ec2_public_dns_name %}{{ ' [' + IP_ARR|join('\", \"') + ']'}}{% else %}{% for host in groups['all'] %}{% if ec2_public_dns_name != hostvars[host]['ec2_public_dns_name']%}{% if IP_ARR.insert(loop.index,(hostvars[host]['ec2_public_dns_name']+':26501')) %}{% endif %}{% endif %}{% endfor %}{{ ' [\"' + IP_ARR|join('\", \"') + '\"]'}}{% endif %}"
+zeebe_contact_points: "{% set IP_ARR=[] %}{% for host in groups['all'] %}{% if ec2_public_dns_name != hostvars[host]['ec2_public_dns_name']%}{% if IP_ARR.insert(loop.index,(hostvars[host]['ec2_public_dns_name']+':26502')) %}{% endif %}{% endif %}{% endfor %}{{ ' [\"' + IP_ARR|join('\", \"') + '\"]'}}"
