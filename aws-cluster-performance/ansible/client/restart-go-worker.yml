@@ -1,0 +1,16 @@
+---
+- hosts: tag_jobworker_client_true
+  become_user: root
+  become: yes
+  tasks:
+      - name: Ensure zeebeworker systemd service is stoppped
+        become: yes
+        systemd:
+            name: docker-compose@zeebeworker
+            state: stopped
+
+      - name: Ensure zeebeworker systemd service is started
+        become: yes
+        systemd:
+            name: docker-compose@zeebeworker
+            state: started

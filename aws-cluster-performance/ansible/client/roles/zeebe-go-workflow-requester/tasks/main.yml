@@ -1,0 +1,5 @@
+# Run `install` target as root
+- name: Make docker containers
+  make:
+    chdir: /tmp/zb
+    target: build

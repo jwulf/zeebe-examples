@@ -3,5 +3,6 @@ zeebe_jar: /tmp/zeebe-nonblocking-start.jar
 go_dist_tar_gz: /tmp/go1.11.2.linux-amd64.tar.gz
 go_extract_dir: /usr/local/
 zeebe_client_contactpoint: "{{hostvars[groups['tag_zeebe_broker_true'][0]]['ec2_public_dns_name']+':26500'}}"
+zeebe_broker_address: "{{hostvars[groups['tag_zeebe_broker_true'][0]]['ec2_public_dns_name']}}"
 nexus_url: https://oss.sonatype.org
 ansible_python_interpreter: /usr/bin/python3
