@@ -1,0 +1,46 @@
+- name: Remove old installation of Go worker
+  file:
+    path: /tmp/zb
+    state: absent
+
+- name: Clone Zeebe Go worker
+  git:
+    repo: https://github.com/jwulf/zb.git
+    version: master
+    dest: /tmp/zb
+    accept_hostkey: yes
+    # ssh-agent doesn't allow key to pass through remote sudo commands.
+
+- name: Ensure zeebeworker systemd service unit exists
+  become: yes
+  template:
+    src: zeebeworker.service.j2
+    dest: /etc/systemd/system/docker-compose@.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Create /etc/docker/compose/zeebeworker/ directory
+  file:
+    path: /etc/docker/compose/zeebeworker/
+    state: directory
+
+- name: Copy docker-compose.yml file for service
+  copy:
+    src: /tmp/zb/docker-compose.yml
+    dest: /etc/docker/compose/zeebeworker/
+    remote_src: yes
+
+- name: Ensure zeebeworker service is disabled and stopped
+  become: yes
+  systemd:
+    name: zeebeworker
+    state: stopped
+    enabled: no
+    daemon_reload: yes
+
+    # Run `install` target as root
+# - name: Make docker containers
+#   make:
+#     chdir: /tmp/zb
+#     target: dockerise

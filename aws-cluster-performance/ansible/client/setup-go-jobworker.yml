@@ -1,0 +1,9 @@
+---
+- hosts: tag_jobworker_client_true
+  become_user: root
+  become: yes
+  roles:
+    # - common
+    # - go
+    # - docker
+    - zeebe-go-worker
