@@ -3,7 +3,7 @@
   become_user: root
   become: yes
   roles:
-    # - common
-    # - go
-    # - docker
+    - common
+    - go
+    - docker
     - zeebe-go-worker
