@@ -18,6 +18,11 @@
     owner: ubuntu
     group: ubuntu
 
+- name: Remove existing instance of Zeebe example
+  file:
+    path: /tmp/zeebe-examples
+    state: absent
+
 - name: Clone Zeebe Examples to get monitoring on the cluster
   git:
     repo: https://github.com/jwulf/zeebe-examples.git

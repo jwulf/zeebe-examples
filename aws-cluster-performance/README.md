@@ -16,6 +16,8 @@ In order to run this repo you will need:
   1. Ansible installed on your machine
   1. (Optional for Monitoring): Docker & Docker-Compose installed on your machine
 
+Note that the Prometheus collector needs to scrape the brokers fast to not timeout or miss data. Therefore I recommend running the entire cluster in an AWS region near to you (by default it runs in Frankfurt), or running the collector in the cluster (instructions for doing that are included below).
+
 ### Terraform
 In this example, we use Terraform to spawn the AWS infrastructure.
 
@@ -46,26 +48,50 @@ ansible-playbook restart-zeebe.yml
 Note that the playbook 'restart-zeebe' removes the data directory and basically gives you a fresh Zeebe cluster with correct configuration.
 
 #### b) Client:
-Here, you'll find Ansible scripts to set up your Zeebe taskworkers, which are responsible for working on tasks. They are dockerised microservices written in Go. You can examine the source code [here](https://github.com/jwulf/zb).
+Here, you'll find Ansible scripts to set up your Zeebe task workers, which are responsible for working on tasks. They are dockerised microservices written in Go. You can examine the source code for the microservices [here](https://github.com/jwulf/zb).
+
 You should run the scripts as follows:
 
 ```sh
 ansible-playbook setup-go-jobworker.yml
 ```
 
-Once your Zeebe cluster is running (you've successfully executed ansible-playbook restart-zeebe.yml for the brokers), you will need to deploy your workflow.
+This will install and configure a set of four microservices on each of your client nodes.
 
-You can deploy a test workflow for the Go microservices on a client instance like this:
+Note on load distribution: the set of task workers on a given client node all connect to the same broker, and each client node's set of workers connects to a different broker in the cluster, to distribute the workload. So each client node is getting its work from a different broker.
+
+Once your Zeebe broker cluster is running (you've successfully executed ansible-playbook restart-zeebe.yml for the brokers), you will need to deploy your workflow.
+
+You can deploy a test workflow for the Go microservices to the broker cluster like this:
 
 Log in to a client node, and run these commands:
 
 ```sh
 cd /tmp/zb/deploy-workflow
 go build
-./deploy
+./deploy-workflow
 ```
 
+To deploy your own custom workflow, pass in `-workflow=$BPMN_FILE`. Note that if you do this, you will need to code up microservices to process the custom workflow.
+
+Now you can bring up the worker microservices:
+
+```sh
+ansible-playbook restart-go-worker
+```
+
+To see what the microservices are doing, log in to a client node and execute this command:
+
+```sh
+cd /etc/docker/compose/zeebeworker/
+docker-compose logs -f
+```
+
+The logs are set to truncate to avoid overflowing the disk, so the output from this command may die periodically when log truncation occurs.
+
 ### Monitoring
+
+These instructions are to start the monitoring in the cluster itself. It is installed and configured with the broker addresses when you use ansible to set up the Go workers.
 
 Ssh into one of the client instances as the user ubuntu. Then do this:
 
@@ -78,11 +104,32 @@ This will start Prometheus and Grafana on this node. You only need it running on
 
 Now open this node in a web browser on port 3000. Log in to Grafana with username/password admin/admin.
 
+### Start the flood!
+
+To start workflow instances, you can use the Go workflow request generator.
+
+Ssh into a client node (you can do this on multiple nodes).
+
+```sh
+cd /tmp/zb/generator
+go build
+./generator
+```
+
+This spawns a process that starts workflow instances on each of the four brokers as fast as possible, in series (blocking). By default it will iterate until it has started 10,000 instances. You can change this by passing `-number=$INSTANCES_TO_START`, for example: `./generator -number=500` to start 500 instances.
+
+When the generator completes, or when you hit Ctrl-C, it reports on the number of start requests issued and the elapsed time. It does not distinguish between success and failure, just the number of start requests it issued to the brokers.
+
+You can increase the request rate by starting more generators on this client node and on other client nodes.
+
+To test a different workflow, pass `-workflow=$WORKFLOW_ID`.
+
 ### Historical Camunda client (outdated)
 
 #### b) Client:
 Here, you'll find Ansible scripts to set up your Zeebe Client, which is responsible for starting instances.
 You should run the scripts as follows:
+
 ```sh
 ansible-playbook setup-nonblocking-start.yml
 ```
