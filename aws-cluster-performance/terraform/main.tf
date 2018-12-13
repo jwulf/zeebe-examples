@@ -55,7 +55,6 @@ resource "aws_instance" "client-startinstance" {
   count = 1
 }
 
-
 resource "aws_instance" "zeebe-broker" {
   instance_type = "c4.2xlarge"
   ami           = "${var.aws_amis}"

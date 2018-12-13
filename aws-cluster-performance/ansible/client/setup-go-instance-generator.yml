@@ -1,0 +1,6 @@
+---
+- hosts: tag_jobworker_client_true
+  become_user: root
+  become: yes
+  roles:
+    - zeebe-go-workflow-requester

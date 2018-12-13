@@ -46,6 +46,41 @@ ansible-playbook restart-zeebe.yml
 Note that the playbook 'restart-zeebe' removes the data directory and basically gives you a fresh Zeebe cluster with correct configuration.
 
 #### b) Client:
+Here, you'll find Ansible scripts to set up your Zeebe taskworkers, which are responsible for working on tasks. They are dockerised microservices written in Go. You can examine the source code [here](https://github.com/jwulf/zb).
+You should run the scripts as follows:
+
+```sh
+ansible-playbook setup-go-jobworker.yml
+```
+
+Once your Zeebe cluster is running (you've successfully executed ansible-playbook restart-zeebe.yml for the brokers), you will need to deploy your workflow.
+
+You can deploy a test workflow for the Go microservices on a client instance like this:
+
+Log in to a client node, and run these commands:
+
+```sh
+cd /tmp/zb/deploy-workflow
+go build
+./deploy
+```
+
+### Monitoring
+
+Ssh into one of the client instances as the user ubuntu. Then do this:
+
+```sh
+cd /tmp/zeebe-examples/aws-cluster-performance/monitoring
+docker-compose up
+```
+
+This will start Prometheus and Grafana on this node. You only need it running on one node.
+
+Now open this node in a web browser on port 3000. Log in to Grafana with username/password admin/admin.
+
+### Historical Camunda client (outdated)
+
+#### b) Client:
 Here, you'll find Ansible scripts to set up your Zeebe Client, which is responsible for starting instances.
 You should run the scripts as follows:
 ```sh

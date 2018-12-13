@@ -3,6 +3,15 @@ zeebe_jar: /tmp/zeebe-nonblocking-start.jar
 go_dist_tar_gz: /tmp/go1.11.2.linux-amd64.tar.gz
 go_extract_dir: /usr/local/
 zeebe_client_contactpoint: "{{hostvars[groups['tag_zeebe_broker_true'][0]]['ec2_public_dns_name']+':26500'}}"
+# Broker to register with for work
 zeebe_broker_address: "{{hostvars[groups['tag_zeebe_broker_true'][0]]['ec2_public_dns_name']}}"
 nexus_url: https://oss.sonatype.org
 ansible_python_interpreter: /usr/bin/python3
+# Brokers to generate workflow instances on
+zeebe_brokers_to_monitor: "{% for host in groups['tag_zeebe_broker_true'] %}    - {{hostvars[host]['ec2_public_dns_name']}}\n{% endfor %}"
+os_environment:
+- key: ZEEBE_BROKERS
+  value : "{% for host in groups['tag_zeebe_broker_true'] %}{{hostvars[host]['ec2_public_dns_name']}}{% if not loop.last %}, {% endif %}{% endfor %}"
+- key: ZEEBE_BROKER_ADDRESS
+  value: "{{hostvars[groups['tag_zeebe_broker_true'][0]]['ec2_public_dns_name']}}"
+

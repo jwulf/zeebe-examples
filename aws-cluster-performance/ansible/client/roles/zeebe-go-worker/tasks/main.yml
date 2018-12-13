@@ -11,7 +11,42 @@
     accept_hostkey: yes
     # ssh-agent doesn't allow key to pass through remote sudo commands.
 
-- name: Create environment variable file for broker contact
+- name: Change ownership of /tmp/zb
+  file:
+    path: /tmp/zb
+    recurse: yes
+    owner: ubuntu
+    group: ubuntu
+
+- name: Clone Zeebe Examples to get monitoring on the cluster
+  git:
+    repo: https://github.com/jwulf/zeebe-examples.git
+    version: master
+    dest: /tmp/zeebe-examples
+    accept_hostkey: yes
+
+- name: Change ownership of /tmp/zeebe-examples
+  file:
+    path: /tmp/zeebe-examples
+    recurse: yes
+    owner: ubuntu
+    group: ubuntu
+
+- name: Populate Prometheus targets
+  become: yes
+  template:
+    src: prometheus.yml.j2
+    dest: /tmp/zeebe-examples/aws-cluster-performance/monitoring/prometheus.yml
+    owner: ubuntu
+    group: ubuntu
+    mode: 0644
+
+- name: Create /etc/docker/compose/zeebeworker/ directory
+  file:
+    path: /etc/docker/compose/zeebeworker/
+    state: directory
+
+- name: Create environment variable file for taskworker -> broker contact
   become: yes
   template:
     src: env.j2
@@ -20,10 +55,13 @@
     group: root
     mode: 0644
 
-- name: Create /etc/docker/compose/zeebeworker/ directory
-  file:
-    path: /etc/docker/compose/zeebeworker/
-    state: directory
+- name: populate /etc/environment
+  lineinfile:
+    dest: "/etc/environment"
+    state: present
+    regexp: "^{{ item.key }}"
+    line: "{{ item.key }}={{ item.value}}"
+  with_items: "{{ os_environment }}"
 
 - name: Copy docker-compose.yml file for service
   copy:
@@ -43,7 +81,7 @@
 - name: Ensure zeebeworker service is disabled and stopped
   become: yes
   systemd:
-    name: zeebeworker
+    name: docker-compose@zeebeworker
     state: stopped
     enabled: no
     daemon_reload: yes
