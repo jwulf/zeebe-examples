@@ -1,7 +1,7 @@
 {
   "__inputs": [
     {
-      "name": "DS_PROMETHEUS",
+      "name": "DS_DS_PROMETHEUS",
       "label": "DS_PROMETHEUS",
       "description": "",
       "type": "datasource",
@@ -14,7 +14,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "5.0.0"
+      "version": "5.0.3"
     },
     {
       "type": "panel",
@@ -53,7 +53,7 @@
   "gnetId": 5237,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1544659806531,
+  "iteration": 1545001835809,
   "links": [],
   "panels": [
     {
@@ -61,7 +61,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "DS_PROMETHEUS",
+      "datasource": "${DS_DS_PROMETHEUS}",
       "fill": 1,
       "gridPos": {
         "h": 9,
@@ -93,16 +93,18 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "zb_workflow_instance_events_count{cluster=\"$cluster\",type=\"created\"}",
+          "expr": "zb_workflow_instance_events_count{type=\"created\",cluster=\"$cluster\"}",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
+          "legendFormat": "Created",
           "refId": "A"
         },
         {
-          "expr": "zb_workflow_instance_events_count{cluster=\"$cluster\",type=\"completed\"}",
+          "expr": "zb_workflow_instance_events_count{type=\"completed\",cluster=\"$cluster\"}",
           "format": "time_series",
           "intervalFactor": 1,
+          "legendFormat": "Completed",
           "refId": "B"
         }
       ],
@@ -147,7 +149,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "DS_PROMETHEUS",
+      "datasource": "${DS_DS_PROMETHEUS}",
       "decimals": 1,
       "description": "",
       "fill": 1,
@@ -231,7 +233,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "DS_PROMETHEUS",
+      "datasource": "${DS_DS_PROMETHEUS}",
       "decimals": 1,
       "fill": 1,
       "gridPos": {
@@ -266,19 +268,104 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(rate(zb_workflow_instance_events_count{cluster=\"$cluster\"}[15s]))",
+          "expr": "sum(rate(zb_workflow_instance_events_count{cluster=\"$cluster\", type=\"created\"}[15s]))",
           "format": "time_series",
-          "hide": true,
+          "hide": false,
           "instant": false,
           "intervalFactor": 1,
-          "legendFormat": "{{ type }}",
+          "legendFormat": "Created",
           "refId": "A"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Workflow instance events",
+      "title": "Workflow creation events",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "decimals": 1,
+          "format": "ops",
+          "label": "Events/s",
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ]
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_DS_PROMETHEUS}",
+      "decimals": 1,
+      "fill": 1,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 9
+      },
+      "id": 11,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "hideZero": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum(rate(zb_workflow_instance_events_count{cluster=\"$cluster\", type=\"completed\"}[15s]))",
+          "format": "time_series",
+          "instant": false,
+          "intervalFactor": 1,
+          "legendFormat": "Completed",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Workflows completed",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -321,7 +408,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "DS_PROMETHEUS",
+      "datasource": "${DS_DS_PROMETHEUS}",
       "decimals": null,
       "description": "",
       "format": "short",
@@ -336,7 +423,7 @@
         "h": 3,
         "w": 7,
         "x": 12,
-        "y": 9
+        "y": 18
       },
       "id": 4,
       "interval": null,
@@ -399,13 +486,13 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "DS_PROMETHEUS",
+      "datasource": "${DS_DS_PROMETHEUS}",
       "fill": 1,
       "gridPos": {
         "h": 9,
         "w": 12,
-        "x": 0,
-        "y": 18
+        "x": 12,
+        "y": 21
       },
       "id": 8,
       "legend": {
@@ -495,7 +582,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": "DS_PROMETHEUS",
+        "datasource": "${DS_DS_PROMETHEUS}",
         "hide": 0,
         "includeAll": false,
         "label": "Cluster",
@@ -546,5 +633,5 @@
   "timezone": "browser",
   "title": "Zeebe-1",
   "uid": "NxsrK5kiz",
-  "version": 7
+  "version": 1
 }
