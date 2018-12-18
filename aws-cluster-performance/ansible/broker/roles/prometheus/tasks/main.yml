@@ -1,0 +1,45 @@
+- name: Install Prometheus Node Exporter
+  command: /tmp/go/bin/go get github.com/prometheus/node_exporter
+
+- name: Install make and gcc
+  become: yes
+  command: apt install make gcc -y
+
+
+- name: Build node_exporter
+  shell: PATH=$PATH:/tmp/go/bin make
+  args:
+    executable: /bin/bash
+    chdir: /home/ubuntu/go/src/github.com/prometheus/node_exporter
+
+- name: Copy node_exporter binary to /usr/local/bin/
+  become: yes
+  copy:
+      src: /home/ubuntu/go/bin/node_exporter
+      dest: /usr/local/bin/
+
+- name: Ensure group "node_exporrter" exists
+  group:
+    name: node_exporter
+    state: present
+
+- name: Add the user 'johnd' with a specific uid and a primary group of 'admin'
+  user:
+    name: node_exporter
+    comment: Prometheus Node Exporter
+    uid: "1040"
+    group: node_exporter
+
+- name: Create Prometheus service configuration
+  become: yes
+  template:
+    src: node_exporter.service.j2
+    dest: /etc/systemd/system/node_exporter.service
+
+- name: Restart system daemon
+  become: yes
+  command: systemctl daemon-reload
+
+- name: Start Prometheus Node Exporter service
+  become: yes
+  command: systemctl start node_exporter

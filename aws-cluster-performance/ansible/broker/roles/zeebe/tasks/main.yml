@@ -105,3 +105,6 @@
   systemd:
       name: apache2
       state: started
+
+- name: Install Prometheus Node Exporter
+  command: go get github.com/prometheus/node_exporter
