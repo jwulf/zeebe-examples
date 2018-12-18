@@ -15,19 +15,21 @@
 - name: Copy node_exporter binary to /usr/local/bin/
   become: yes
   copy:
+      remote_src: yes
       src: /home/ubuntu/go/bin/node_exporter
       dest: /usr/local/bin/
 
 - name: Ensure group "node_exporrter" exists
+  become: yes
   group:
     name: node_exporter
     state: present
 
-- name: Add the user 'johnd' with a specific uid and a primary group of 'admin'
+- name: Add the user 'node_exporter'
+  become: yes
   user:
     name: node_exporter
     comment: Prometheus Node Exporter
-    uid: "1040"
     group: node_exporter
 
 - name: Create Prometheus service configuration
