@@ -6,7 +6,7 @@ zeebe_client_contactpoint: "{{hostvars[groups['tag_zeebe_broker_true'][0]]['ec2_
 nexus_url: https://oss.sonatype.org
 ansible_python_interpreter: /usr/bin/python3
 zeebe_brokers_to_monitor: "{% for host in groups['tag_zeebe_broker_true'] %}    - {{hostvars[host]['ec2_public_dns_name']}}\n{% endfor %}"
-
+os_brokers_to_monitor: "{% for host in groups['tag_zeebe_broker_true'] %}    - {{hostvars[host]['ec2_public_dns_name']}}:9100\n{% endfor %}"
 # ZEEBE_BROKER_ADDRESS - Broker to register with for work. Note: this  implementation relies on the number of brokers and clients being equal
 # ZEEBE_BROKERS - Brokers to generate workflow instances on. The Go workflow instance generator will hit all of them.
 

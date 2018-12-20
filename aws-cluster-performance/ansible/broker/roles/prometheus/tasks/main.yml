@@ -18,6 +18,7 @@
       remote_src: yes
       src: /home/ubuntu/go/bin/node_exporter
       dest: /usr/local/bin/
+      mode: o+rx
 
 - name: Ensure group "node_exporrter" exists
   become: yes

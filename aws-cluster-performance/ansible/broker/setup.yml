@@ -2,8 +2,8 @@
 - hosts: all
 
   roles:
-    # - common
-    # - httpd
-    # - java
-    # - go
+    - common
+    - httpd
+    - java
+    - go
     - prometheus

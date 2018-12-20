@@ -14,3 +14,11 @@ scrape_configs:
   static_configs:
   - targets:
 {{ zeebe_brokers_to_monitor }}
+- job_name: os_metrics
+  scrape_interval: 10s
+  scrape_timeout: 7s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+{{ os_brokers_to_monitor }}
